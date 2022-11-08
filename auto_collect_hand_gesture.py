@@ -24,7 +24,7 @@ def upload_image(src_img,name,split):
 
     # Construct the URL
     upload_url = "".join([
-        "https://api.roboflow.com/dataset/asl-letter/upload",
+        "https://api.roboflow.com/dataset/vgu-hand/upload",
         "?api_key=" + MY_KEY,
         f"&name={name}",
         f"&split={split}"
@@ -42,7 +42,7 @@ def upload_annotation(content,annotation_filename,image_id):
     # Read Annotation as String
     # Construct the URL
     upload_url = "".join([
-        f"https://api.roboflow.com/dataset/asl-letter/annotate/{image_id}",
+        f"https://api.roboflow.com/dataset/vgu-hand/annotate/{image_id}",
         "?api_key=" + MY_KEY,
         "&name=", annotation_filename
     ])
@@ -71,7 +71,7 @@ def is_handsign_character(char:str):
 
 def main():
     cam =  cv2.VideoCapture(0)
-    detector = HandDetector()
+    detector = HandDetector(True,maxHands=2)
     current_letter= None
     status_text = None
     cannot_switch_char = False
@@ -79,7 +79,8 @@ def main():
 
     while cam.isOpened():
         _,frame = cam.read()
-        hand,img = detector.findHands(cv2.cvtColor(frame,cv2.COLOR_BGR2RGB))
+        hand,img = detector.findHands(frame)
+        print(hand)
         rgb_image = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
 
         if(current_letter is None):
