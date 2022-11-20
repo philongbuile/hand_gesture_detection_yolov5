@@ -79,9 +79,11 @@ def main():
 
     while cam.isOpened():
         _,frame = cam.read()
+
         hand,img = detector.findHands(frame)
         print(hand)
-        rgb_image = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+        # rgb_image = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+        rgb_image = frame
 
         if(current_letter is None):
             status_text = "press a character to record"

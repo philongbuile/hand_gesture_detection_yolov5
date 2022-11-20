@@ -74,6 +74,8 @@ def is_handsign_character(char:str):
 def main():
     character_insignia_key ={"a":"monkey","b":"dragon","c":"rat","d":"bird","e":"snake","f":"ox","g":"dog","h":"horse","i":"tiger","j":"boar","k":"ram","l":"hare"}
     cam =  cv2.VideoCapture(0)
+    cam.set(3,1280)
+    cam.set(4,720)
     detector = HandDetector(False,maxHands=2,detectionCon=0.4,minTrackCon=0.4)
     current_naruto_handsign= None
     status_text = None
@@ -91,7 +93,7 @@ def main():
         else:
             status_text = "Recording {sign}, press {letter} again to stop".format(sign= character_insignia_key[current_naruto_handsign],letter=current_naruto_handsign)
         
-        key = cv2.waitKey(50)
+        key = cv2.waitKey(100)
         # not pressing any key, push the data to roboflow if current letter is not ''
         if(key == -1):
             if(current_naruto_handsign is None ):
@@ -125,10 +127,12 @@ def main():
                             pass
                         else:
                             x,y,w,h = hand[0]["bbox"]
-                            x = np.clip(x-30,0,None)
-                            y = np.clip(y-30,0,None)
-                            w = np.clip(w+60,0,rgb_image.shape[1])
-                            h = np.clip(h+60,0,rgb_image.shape[0])                            
+                            # if snake, adjust only a little of the bbox
+                            # 
+                            x = np.clip(x-20,0,None)
+                            y = np.clip(y-20,0,None)
+                            w = np.clip(w+40,0,rgb_image.shape[1])
+                            h = np.clip(h+40,0,rgb_image.shape[0])                            
                             thread = Thread(target=send_annotation,args=(character_insignia_key[current_naruto_handsign],rgb_image,x,y,w,h))
                             thread.start()
 

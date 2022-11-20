@@ -2,3 +2,4 @@ numpy
 opencv-python
 pillow
 pascal_voc_writer
+cvzone
