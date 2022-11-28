@@ -1,8 +1,12 @@
 gestures:
-  0: "peace" 
-  1: "ok" 
-  2: "like" 
-  3: "dislike" 
-  4: "yolo" 
-  5: "fuck you"
-  6: "undefined" 
+  0: "light1" # number 1
+  1: "light2" # number 2
+  2: "light3" # number 3
+  3: "computer on" #
+  4: "ac" 
+  5: "all shutdown"
+  6: "all start"
+  7: "all lights down"
+  8: "detection on" # thumbs up
+  9: "detection off" # thumbs down
+
