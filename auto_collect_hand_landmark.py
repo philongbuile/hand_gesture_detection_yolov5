@@ -76,6 +76,6 @@ def main(split="val",resolution=(1280,720)):
 
 
 if __name__ == "__main__":
-    # main("train",(1280,720))
-    main("val",(1280,720))
-    # main("test",(640,480))
+    main("train",(1280,720))
+    # main("val",(1280,720))
+    # main("test",(1280,720))

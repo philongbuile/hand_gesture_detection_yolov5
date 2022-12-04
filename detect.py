@@ -4,17 +4,16 @@ import numpy as np
 import torch
 from auto_collect_hand_landmark import label_dict_from_config_file
 
-from hand_dataset import NeuralNetworkWithCACLoss
+from models import NeuralNetwork, NeuralNetworkWithCACLoss
 from utils import HandLandmarksDetector
 
-def main(path):
+def main(model,path):
     cam =  cv2.VideoCapture(0)
     detector = HandLandmarksDetector()
     status_text = None
     signs = label_dict_from_config_file("hand_gesture.yaml")
 
 
-    model = NeuralNetworkWithCACLoss()
     model.load_state_dict(torch.load(path))
     model.eval()
 
@@ -43,4 +42,8 @@ def main(path):
 
 
 if __name__ == "__main__":
-    main("./models/model_28-11 15:07_NeuralNetworkWithCACLoss_last")
+    # model = NeuralNetworkWithCACLoss()
+    # main(model,"./models/model_28-11 15:07_NeuralNetworkWithCACLoss_last")
+
+    model = NeuralNetwork()
+    main(model,"./models/model_04-12 23:19_NeuralNetwork")

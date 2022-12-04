@@ -24,7 +24,7 @@ class NeuralNetworkWithCACLoss(nn.Module):
             nn.Dropout(p=0.6),
             nn.Linear(128, len(list_label)),
         )
-        self.cac_loss = CACLoss(len(list_label),alpha=2,fixed=False)
+        self.cac_loss = CACLoss(len(list_label),magnitude=1,alpha=3)
         
     def forward(self, x):
         x = self.flatten(x)
@@ -35,12 +35,16 @@ class NeuralNetworkWithCACLoss(nn.Module):
         distances = self(x)
         softmin = torch.nn.Softmin(dim=1)
         rejection_scores = (distances * (1-softmin(distances)))
-        print(rejection_scores)
         chosen_ind = torch.argmin(rejection_scores,dim=1)
-        print(chosen_ind)
         return torch.where(rejection_scores[0,chosen_ind]<threshold,chosen_ind,-1)
 
-
+    def predict_with_known_class(self,x):
+        distances = self(x)
+        softmin = torch.nn.Softmin(dim=1)
+        rejection_scores = (distances * (1-softmin(distances)))
+        return torch.argmin(rejection_scores,dim=1)
+    def score(self,distances):
+        return self.cac_loss.score(distances)
         
 class NeuralNetwork(nn.Module):
     def __init__(self):
@@ -53,16 +57,15 @@ class NeuralNetwork(nn.Module):
             nn.BatchNorm1d(128),
             nn.Linear(128, 128),
             nn.ReLU(),
-            nn.Dropout(p=0.23),
+            nn.Dropout(p=0.4),
             nn.Linear(128, 128),
             nn.ReLU(),
-            nn.Dropout(p=0.23),
+            nn.Dropout(p=0.4),
             nn.Linear(128, 128),
             nn.ReLU(),
             nn.Dropout(p=0.6),
             nn.Linear(128, len(list_label)),
         )
-        self.softmax_ce_loss = nn.Softmax()
         
     def forward(self, x):
         x = self.flatten(x)
@@ -70,10 +73,34 @@ class NeuralNetwork(nn.Module):
         return logits
     def predict(self,x,threshold=0.8):
         logits = self(x)
-        softmax_prob = nn.Softmax(logits,dim=1)
-        chosen_ind = torch.argmax(softmax_prob).tolist()
+        softmax_prob = nn.Softmax(dim=1)(logits)
+        chosen_ind = torch.argmax(softmax_prob,dim=1)
+        return torch.where(softmax_prob[0,chosen_ind]>threshold,chosen_ind,-1)
+    def predict_with_known_class(self,x):
+        logits = self(x)
+        softmax_prob = nn.Softmax(dim=1)(logits)
+        return torch.argmax(softmax_prob,dim=1)
+    def score(self,logits):
+        return -torch.amax(logits,dim=1)
+
+class RandomClassifier(nn.Module):
+    def __init__(self):
+        super(RandomClassifier, self).__init__()
+        list_label = label_dict_from_config_file("hand_gesture.yaml")
+        self.num_class = len(list_label)
+        self.dummy_stuff =  nn.Linear(63, 128)
+        
+    def forward(self, x):
+        self.eval()
+        return torch.rand(x.shape[0],self.num_class)
+    def predict(self,x,threshold=0.8):
+        logits = self(x)
+        softmax_prob = nn.Softmax(dim=1)(logits)
+        chosen_ind = torch.argmax(softmax_prob,dim=1).tolist()
         return torch.where(softmax_prob[chosen_ind]>threshold,chosen_ind,-1)
-        # if softmax_prob[chosen_ind] > threshold:
-        #     return chosen_ind
-        # else:
-        #     return -1
+    def predict_with_known_class(self,x):
+        logits = self(x)
+        softmax_prob = nn.Softmax(dim=1)(logits)
+        return torch.argmax(softmax_prob,dim=1)
+    def score(self,logits):
+        return -torch.amax(logits,dim=1)

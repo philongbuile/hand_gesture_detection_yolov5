@@ -4,6 +4,8 @@ import yaml
 import cv2
 import pandas as pd
 import mediapipe as mp
+from torch.utils.data import Dataset
+import torch
 def is_handsign_character(char:str):
     return ord('a') <= ord(char) <=ord("z") or char == " "
 def label_dict_from_config_file(relative_path):
@@ -61,4 +63,33 @@ class HandLandmarksDetector():
                     hand.extend([x,y,z])
             hands.append(hand)
         return hands,annotated_image
-    
+
+class CustomImageDataset(Dataset):
+    def __init__(self, data_file):
+        self.data = pd.read_csv(data_file)
+        # self.labels = torch.nn.functional.one_hot(torch.from_numpy(self.data.iloc[:,0].apply( lambda char:ord(char)-97).to_numpy()))
+        self.labels = torch.from_numpy(self.data.iloc[:,0].to_numpy())
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        one_hot_label = self.labels[idx]
+        torch_data = torch.from_numpy(self.data.iloc[idx,1:].to_numpy(dtype=np.float32))
+        return torch_data, one_hot_label
+class EarlyStopper:
+    def __init__(self, patience=1, min_delta=0):
+        self.patience = patience
+        self.min_delta = min_delta
+        self.counter = 0
+        self.watched_metrics = np.inf
+
+    def early_stop(self, current_value):
+        if current_value < self.watched_metrics:
+            self.watched_metrics = current_value
+            self.counter = 0
+        elif current_value > (self.watched_metrics + self.min_delta):
+            self.counter += 1
+            if self.counter >= self.patience:
+                return True
+        return False
