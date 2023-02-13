@@ -43,7 +43,7 @@ class HandLandmarksDetector():
         self.mp_drawing = mp.solutions.drawing_utils
         self.mp_drawing_styles = mp.solutions.drawing_styles
         self.mp_hands = mp.solutions.hands
-        self.detector = self.mp_hands.Hands(False,max_num_hands=1,min_detection_confidence=0.9)
+        self.detector = self.mp_hands.Hands(False,max_num_hands=1,min_detection_confidence=0.5)
     def detectHand(self,frame):
         hands = []
         frame = cv2.flip(frame, 1)

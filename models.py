@@ -24,7 +24,7 @@ class NeuralNetworkWithCACLoss(nn.Module):
             nn.Dropout(p=0.6),
             nn.Linear(128, len(list_label)),
         )
-        self.cac_loss = CACLoss(len(list_label),magnitude=1,alpha=3)
+        self.cac_loss = CACLoss(len(list_label),magnitude=1,alpha=1)
         
     def forward(self, x):
         x = self.flatten(x)

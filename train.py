@@ -24,7 +24,7 @@ if __name__ == "__main__":
     list_label = label_dict_from_config_file("hand_gesture.yaml")
     DATA_FOLDER_PATH="./data/"
     trainset = CustomImageDataset(os.path.join(DATA_FOLDER_PATH,"landmark_train.csv"))
-    trainloader = torch.utils.data.DataLoader(trainset,batch_size=30,shuffle=True,drop_last = True) 
+    trainloader = torch.utils.data.DataLoader(trainset,batch_size=40,shuffle=True) 
 
     valset = CustomImageDataset(os.path.join(DATA_FOLDER_PATH,"landmark_val.csv"))
     val_loader = torch.utils.data.DataLoader(valset,batch_size=50, shuffle=True,drop_last=True)
@@ -33,11 +33,12 @@ if __name__ == "__main__":
 
     model = NeuralNetworkWithCACLoss()
     loss_function = model.cac_loss
-    early_stopper = EarlyStopper(patience=40,min_delta=0.03)
+    early_stopper = EarlyStopper(patience=30,min_delta=0.01)
 
     # model = NeuralNetwork()
-    # loss_function = nn.CrossEntropyLoss(label_smoothing=0.04,ignore_index=-1)
-    # early_stopper = EarlyStopper(patience=40,min_delta=0.01)
+    # # loss_function = nn.CrossEntropyLoss(label_smoothing=0.04,ignore_index=-1)
+    # loss_function = nn.CrossEntropyLoss(ignore_index=-1)
+    # early_stopper = EarlyStopper(patience=30,min_delta=0.01)
 
 
     optimizer = optim.Adam(model.parameters(),lr=0.0001)
@@ -114,7 +115,7 @@ if __name__ == "__main__":
             model_path = f'models/model_{timestamp}_{model.__class__.__name__}_best'
             torch.save(model.state_dict(), model_path)
         if early_stopper.early_stop(avg_vloss):
-            print(f"stopping at epoch {epoch}")
+            print(f"stopping at epoch {epoch}, minimum: {early_stopper.watched_metrics}")
             break
 
     writer.close()

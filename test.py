@@ -12,10 +12,10 @@ test_loader = torch.utils.data.DataLoader(testset,batch_size=20,shuffle=True,dro
 
 
 nn1 = NeuralNetworkWithCACLoss()
-nn1.load_state_dict(torch.load("./models/model_04-12 22:20_NeuralNetworkWithCACLoss"))
+nn1.load_state_dict(torch.load("./models/model_05-12 12:15_NeuralNetworkWithCACLoss_best"))
 
 nn2 = NeuralNetwork()
-nn2.load_state_dict(torch.load("./models/model_04-12 23:19_NeuralNetwork"))
+nn2.load_state_dict(torch.load("./models/model_05-12 13:21_NeuralNetwork_best"))
 models = [nn1,nn2,RandomClassifier()]
 
 

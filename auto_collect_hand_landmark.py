@@ -25,7 +25,6 @@ def main(split="val",resolution=(1280,720)):
     saved_frame = None
     while cam.isOpened():
         _,frame = cam.read()
-
         hands,annotated_image = hand_detector.detectHand(frame)
         if(current_letter is None):
             status_text = "press a character to record"
