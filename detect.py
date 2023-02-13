@@ -6,7 +6,7 @@ import torch
 from auto_collect_hand_landmark import label_dict_from_config_file
 
 from models import NeuralNetwork, NeuralNetworkWithCACLoss
-from physical import ModbusMaster
+from physical import ModbusMaster, NoOp
 from utils import HandLandmarksDetector
 
 def main(model,path):
@@ -17,7 +17,12 @@ def main(model,path):
     status_text = None
     signs = label_dict_from_config_file("hand_gesture.yaml")
 
-    controller = ModbusMaster()
+    # for controlling lights
+    # controller = ModbusMaster()
+
+    
+    # for image
+    controller = NoOp()
 
     light1 = False
     light2 = False

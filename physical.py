@@ -99,6 +99,26 @@ class ModbusMaster():
 
 
 
+class NoOp():
+    def __init__(self) -> None:
+        pass
+        
+
+
+    def switch_actuator_1(self,state):
+        pass
+
+    def switch_actuator_2(self,state):
+        pass
+    
+    def switch_actuator_3(self,state):
+        pass
+
+    def close(self):
+        self.ser.close()
+
+
+
 
 
 
